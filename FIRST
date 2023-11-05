@@ -1,0 +1,48 @@
+import requests
+from bs4 import BeautifulSoup
+https://colab.research.google.com/drive/1_weHTO3z0cON9ktkDs2nAaaqx5dLZJX6
+
+headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36'}
+url = 'https://www.amazon.com.br/PlayStation-CFI-1214A01X-Console-5/dp/B0BNSR3MW9/ref=sr_1_6?__mk_pt_BR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=5VUZAVINHK4S&keywords=PS5&qid=1698957822&sprefix=ps5%2Caps%2C486&sr=8-6&ufe=app_do%3Aamzn1.fos.25548f35-0de7-44b3-b28e-0f56f3f96147&th=1'
+url2 = 'https://www.amazon.com.br/PlayStation-Controle-5-DualSense/dp/B088GNW267/ref=pd_sim_sccl_2_1/143-8509771-8604827?pd_rd_w=vzWH3&content-id=amzn1.sym.08510afe-a900-4aad-8c23-f78e5ba6d60a&pf_rd_p=08510afe-a900-4aad-8c23-f78e5ba6d60a&pf_rd_r=A4PTKT9ABF50FZEP3168&pd_rd_wg=OAhCN&pd_rd_r=db59c17f-8a79-41af-a3f9-8db398c3bb0c&pd_rd_i=B088GNW267&psc=1'
+
+try:
+    amazon_projeto = requests.get(url2, headers=headers)
+
+    if amazon_projeto.status_code == 200:
+        amazon = BeautifulSoup(amazon_projeto.text, 'html.parser')
+        product_title = amazon.find(id='productTitle')
+        product_total_value = amazon.find(id='corePriceDisplay_desktop_feature_div')
+        product_review = amazon.find(id='acrCustomerReviewText')
+        product_brand = amazon.find(id='platformInformation_feature_div')
+
+        if product_title:
+           product_title = amazon.find(id='productTitle').get_text()
+           print("Produto:", product_title)
+        else:
+           print("Nome do produto não disponível")
+
+        if product_total_value:
+           product_total_value = amazon.find(id='corePriceDisplay_desktop_feature_div').get_text()
+           print("Preço total:", product_total_value)
+        else:
+          print("Preço total indisponível")
+
+        if product_review:
+           product_review = product_review = amazon.find(id='acrCustomerReviewText').get_text()
+           print(product_review)
+        else:
+           print("Quantidade de avaliações indisponível.")
+
+        if product_brand:
+           product_brand = amazon.find(id='platformInformation_feature_div').get_text()
+           print(product_brand)
+        else:
+           print("Marca indisponível")
+
+    else:
+        print(f"Resposta não é 200: {amazon_projeto.status_code}")
+except requests.exceptions.RequestException as e:
+    print(f"Erro na solicitação: {e}")
+except Exception as ex:
+    print(f"Erro desconhecido: {ex}")
